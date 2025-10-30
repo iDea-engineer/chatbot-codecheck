@@ -45,7 +45,8 @@ async def ask(req: AskRequest, db: Session = Depends(get_db)):
             system=sys_prompt if sys_prompt else None, 
             history=history_items
         )
-        a = repo.create_message(db, role="assistant", text=reply)
+        if ENABLE_DB:
+            a = repo.create_message(db, role="assistant", text=reply)
         return AskResponse(reply=reply, tokens_input=tok_in, tokens_output=tok_out)
     except AIRateLimitError as e:
         raise HTTPException(status_code=429, detail="rate_limited") from e
